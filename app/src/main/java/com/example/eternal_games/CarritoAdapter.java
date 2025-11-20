@@ -27,6 +27,7 @@ public class CarritoAdapter extends RecyclerView.Adapter<CarritoAdapter.CarritoV
     public CarritoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View vista = LayoutInflater.from(context).inflate(R.layout.item_carrito, parent, false);
         return new CarritoViewHolder(vista);
+
     }
 
     @Override
@@ -38,6 +39,17 @@ public class CarritoAdapter extends RecyclerView.Adapter<CarritoAdapter.CarritoV
         holder.txtPrecioUnitario.setText("Precio unitario: " + item.producto.price);
         holder.txtCantidad.setText("Cantidad: " + item.cantidad);
         holder.txtTotal.setText("Total: " +item.getTotal());
+        //evento boton eliminar carrito
+        holder.btnEliminar.setOnClickListener(v -> {
+            int posicion = holder.getAdapterPosition();
+            if (posicion != RecyclerView.NO_POSITION) {
+                carrito.remove(posicion);
+                notifyItemRemoved(posicion);
+                notifyItemRangeChanged(posicion, carrito.size());
+
+            }
+        });
+
     }
 
     @Override
@@ -46,7 +58,7 @@ public class CarritoAdapter extends RecyclerView.Adapter<CarritoAdapter.CarritoV
     }
 
     public static class CarritoViewHolder extends RecyclerView.ViewHolder {
-        ImageView imgProducto;
+        ImageView imgProducto , btnEliminar;
         TextView txtTitulo, txtPrecioUnitario, txtCantidad, txtTotal;
 
         public CarritoViewHolder(@NonNull View itemView) {
@@ -56,6 +68,8 @@ public class CarritoAdapter extends RecyclerView.Adapter<CarritoAdapter.CarritoV
             txtPrecioUnitario = itemView.findViewById(R.id.txtPrecioUnitario);
             txtCantidad = itemView.findViewById(R.id.txtCantidad);
             txtTotal = itemView.findViewById(R.id.txtTotal);
+            btnEliminar = itemView.findViewById(R.id.btnEliminar); // nuevo BOTON
+
         }
     }
 }
