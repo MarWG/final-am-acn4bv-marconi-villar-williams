@@ -37,7 +37,7 @@ public class CarritoActivity extends AppCompatActivity {
         recyclerCarrito = findViewById(R.id.recyclerCarrito);
         CarritoAdapter adapter = new CarritoAdapter(this, carrito);
 
-        //USAMOS PARA ACTUALIZAR EN CASO QUE ALLA ELIMINADO
+        //USAMOS PARA ACTUALIZAR EN CASO QUE HAYA ELIMINADO
         adapter.setCallback(nuevoCarrito -> {
             actualizarResumen(); // ya usa la lista "carrito" directamente
         });

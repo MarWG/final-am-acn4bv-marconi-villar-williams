@@ -5,13 +5,10 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,14 +18,21 @@ public class MainActivity extends AppCompatActivity {
     private Button btnDemo;
     private TextView badgeCantidad;
     private FloatingActionButton fabCarrito;
-
     private List<Producto> productos = new ArrayList<>();
     private List<CarritoItem> carrito = new ArrayList<>();
     private ProductoAdapter adapter;
+    private FirebaseRepository repo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Si no hay usuario logueado, redirigimos al login
+        repo = new FirebaseRepository(); //intanciamso fiberbase repo para manejo de bd
+        if (!repo.estaLogueado()) {
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return;
+        }
         setContentView(R.layout.activity_main);
 
         recyclerProductos = findViewById(R.id.recyclerProductos);
