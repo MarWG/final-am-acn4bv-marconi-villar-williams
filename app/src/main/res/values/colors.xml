@@ -17,5 +17,6 @@
     <!-- Colores para carrito -->
     <color name="colorMarcaRojo">#F00707</color>
     <color name="purple_500">#6200EE</color>
-
+    <!-- Color fondo google para el boton -->
+    <color name="fondoGoogle">#F2F2F2</color>
 </resources>

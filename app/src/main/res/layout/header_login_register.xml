@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/headerWrapper"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/headerLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/blackdark"
+        android:padding="16dp"
+        android:gravity="center">
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/logo"
+        android:contentDescription="Logo Eternal Games" />
+    <TextView
+        android:id="@+id/titulo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Eternal Games"
+        android:textColor="@color/red"
+        android:textSize="30sp"
+        android:fontFamily="@font/slugsracer"
+        android:layout_marginTop="10dp" />
+    </LinearLayout>
+
+    <!-- Campo de error visual -->
+    <TextView
+        android:id="@+id/headerError"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="14sp"
+        android:gravity="center"
+        android:visibility="gone"
+        android:padding="8dp"
+        android:background="@android:color/transparent"/>
+</LinearLayout>

@@ -54,12 +54,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        // Botón para agregar productos demo desde JSON
-        btnDemo.setOnClickListener(v -> {
-            productos.addAll(ProductoRepository.obtenerProductosDemo());
-            adapter.notifyDataSetChanged();
-            Toast.makeText(this, "Productos demo cargados.", Toast.LENGTH_SHORT).show();
-        });
+        // Botón para agregar productos demo desde JSON --> quedo inactivo luego vemso que hacemos
+        //btnDemo.setOnClickListener(v -> {
+        //    productos.addAll(ProductoRepository.obtenerProductosDemo());
+        //    adapter.notifyDataSetChanged();
+        //    Toast.makeText(this, "Productos demo cargados.", Toast.LENGTH_SHORT).show();
+        //});
 
         // Botón flotante para abrir el carrito
         fabCarrito.setOnClickListener(v -> {
