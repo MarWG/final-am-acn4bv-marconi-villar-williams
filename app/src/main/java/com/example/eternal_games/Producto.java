@@ -2,11 +2,11 @@ package com.example.eternal_games;
 import java.io.Serializable;
 
 public class Producto implements Serializable {
-    public int id;
+    public String id;
     public String title;
     public String description;
     public int price;
-    public String code;
+    //public String code;
     public boolean status;
     public String platform;
     public boolean topSell;

@@ -34,11 +34,11 @@ public class ProductoRepository {
                 JSONObject obj = array.getJSONObject(i);
                 Producto producto = new Producto();
 
-                producto.id = obj.getInt("id");
+                //producto.id = obj.getInt("id");
                 producto.title = obj.getString("title");
                 producto.description = obj.getString("description");
                 producto.price = obj.getInt("price");
-                producto.code = obj.getString("code");
+                //producto.code = obj.getString("code");
                 producto.status = obj.getBoolean("status");
                 producto.platform = obj.optString("platform", "");
                 producto.topSell = obj.optBoolean("topSell", false);
@@ -79,11 +79,11 @@ public class ProductoRepository {
 
     public static List<Producto> obtenerProductosDemo() {
         Producto p1 = new Producto();
-        p1.id = 1;
+        //p1.id = 1;
         p1.title = "Zelda";
         p1.description = "Mundo Abierto";
         p1.price = 4999;
-        p1.code = "ES001";
+        //p1.code = "ES001";
         p1.status = true;
         p1.platform = "Nintendo";
         p1.topSell = true;
@@ -92,11 +92,11 @@ public class ProductoRepository {
         p1.img = R.drawable.zelda;
 
         Producto p2 = new Producto();
-        p2.id = 2;
+        //p2.id = 2;
         p2.title = "Zelda 2";
         p2.description = "Mundo Abierto";
         p2.price = 3999;
-        p2.code = "GF002";
+        //p2.code = "GF002";
         p2.status = true;
         p2.platform = "Nintendo";
         p2.topSell = false;
@@ -115,20 +115,20 @@ public class ProductoRepository {
             List<Producto> lista = new ArrayList<>();
             for (DocumentSnapshot doc : query.getDocuments()) {
                 Producto producto = new Producto();
-                producto.id = doc.getLong("id").intValue();
+                //producto.id = doc.getLong("id").intValue();
+                producto.id = doc.getId();
                 producto.title = doc.getString("title");
                 //Log.d("Firebase", "producto leido: " + doc.getString("title"));
                 producto.description = doc.getString("description");
                 producto.price = doc.getLong("price").intValue();
-                producto.code = doc.getString("code");
+                // No se utiliza mas -> producto.code = doc.getString("code");
                 producto.status = doc.getBoolean("status");
-                //Se pusieron por default algunas propiedades hasta definir modelo final desde react
-                producto.platform = ""; //doc.getString("platform");
-                producto.topSell = true; //doc.getBoolean("topSell");
-                producto.genre = ""; //doc.getString("genre");
-                producto.category = ""; //doc.getString("category");
+                producto.platform = doc.getString("platform");
+                producto.topSell = doc.getBoolean("topSell");
+                producto.genre = doc.getString("genre");
+                producto.category = doc.getString("category");
 
-                //Falta definr donde levantamso imagen
+                //Falta definr todavia donde levantamso imagen
                 String imgName = doc.getString("img");
                 int resId = context.getResources().getIdentifier(imgName, "drawable", context.getPackageName());
                 producto.img = (resId != 0) ? resId : R.drawable.imagen_no_disponible;
