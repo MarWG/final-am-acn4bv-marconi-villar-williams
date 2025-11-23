@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/fondo">
+
+    <!-- incluimos Header negro para login y registro con logo y título -->
+    <include
+        layout="@layout/header_login_register"
+        android:id="@+id/headerLogin"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Contenedor para login -->
+    <LinearLayout
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/contenedorRegistro"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/contenedor_blanco"
+        android:padding="24dp"
+        android:layout_marginTop="24dp"
+        android:elevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/headerLogin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Email -->
+        <EditText
+            android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Correo electronico"
+            android:inputType="textEmailAddress"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Pass -->
+        <EditText
+            android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Contraseña"
+            android:inputType="textPassword"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Boton de registro -->
+        <Button
+            android:id="@+id/btnRegister"
+            android:backgroundTint="@color/blackdarkbutton"
+            android:layout_width="195dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:minHeight="48dp"
+            android:text="Reegistrarse"
+            android:layout_gravity="center_horizontal" />
+
+        <!-- incluimos seprador  -->
+        <include layout="@layout/seprador_o" />
+
+        <!-- incluimos boton Gooogle -->
+        <include layout="@layout/button_google" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
