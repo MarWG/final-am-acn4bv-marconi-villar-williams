@@ -67,52 +67,60 @@
         android:layout_height="0dp"
         android:padding="8dp"
         app:layout_constraintTop_toBottomOf="@id/navbar_inferior"
-        app:layout_constraintBottom_toTopOf="@id/txtTotalGeneral"
+        app:layout_constraintBottom_toTopOf="@+id/footerCarrito"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Cantidad total de unidades -->
-
-    <TextView
-        android:id="@+id/txtCantidadTotal"
-        android:layout_width="wrap_content"
+    <!-- Footer blanco con total, cantidad y botón -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/footerCarrito"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Cantidad: 0"
-        android:textColor="@color/cardview_dark_background"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@android:color/white"
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/txtTotalGeneral" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- Total general en pesos -->
-    <TextView
-        android:id="@+id/txtTotalGeneral"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Total: $0"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="@color/cardview_dark_background"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintTop_toBottomOf="@id/recyclerCarrito"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <!-- Total -->
+        <TextView
+            android:id="@+id/txtTotalGeneral"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total: $0"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/cardview_dark_background"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Boton Finalizar Compra -->
-    <Button
-        android:id="@+id/btnFinalizarCompra"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Finalizar Compra"
-        android:textSize="16sp"
-        android:backgroundTint="@color/ButtonAccionAzul"
-        android:textColor="@android:color/white"
-        android:layout_marginBottom="24dp"
-        app:layout_constraintTop_toBottomOf="@id/txtCantidadTotal"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        <!-- Cantidad -->
+        <TextView
+            android:id="@+id/txtCantidadTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cantidad: 0"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/cardview_dark_background"
+            android:layout_marginTop="4dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txtTotalGeneral" />
+
+        <!-- Botón Finalizar Compra -->
+        <Button
+            android:id="@+id/btnFinalizarCompra"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Finalizar Compra"
+            android:textSize="16sp"
+            android:backgroundTint="@color/ButtonAccionAzul"
+            android:textColor="@android:color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
