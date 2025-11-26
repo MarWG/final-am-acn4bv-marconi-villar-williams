@@ -10,6 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
 public class CarritoAdapter extends RecyclerView.Adapter<CarritoAdapter.CarritoViewHolder> {
@@ -35,11 +37,22 @@ public class CarritoAdapter extends RecyclerView.Adapter<CarritoAdapter.CarritoV
     public void onBindViewHolder(@NonNull CarritoViewHolder holder, int position) {
         CarritoItem item = carrito.get(position);
 
-        holder.imgProducto.setImageResource(item.producto.img);
+        //holder.imgProducto.setImageResource(item.producto.img);
         holder.txtTitulo.setText(item.producto.title);
         holder.txtPrecioUnitario.setText("Precio unitario: " + item.producto.price);
         holder.txtCantidad.setText("Cantidad: " + item.cantidad);
         holder.txtTotal.setText("Total: " +item.getTotal());
+
+        // Manejo de img lo traemos de url usamos lib picasso mas liviano
+        if (item.producto.imgUrl != null && !item.producto.imgUrl.isEmpty()) {
+            Picasso.get()
+                    .load(item.producto.imgUrl)
+                    .placeholder(R.drawable.imagen_no_disponible)
+                    .error(R.drawable.imagen_no_disponible)
+                    .into(holder.imgProducto);
+        } else {
+            holder.imgProducto.setImageResource(R.drawable.imagen_no_disponible);
+        }
 
         //evento boton eliminar carrito
         holder.btnEliminar.setOnClickListener(v -> {

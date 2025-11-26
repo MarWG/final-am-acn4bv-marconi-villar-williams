@@ -12,5 +12,8 @@ public class Producto implements Serializable {
     public boolean topSell;
     public String genre;
     public String category;
+    // Imagen local por default
     public int img;
+    // Imagen web (URL)
+    public String imgUrl;
 }

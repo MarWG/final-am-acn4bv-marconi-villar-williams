@@ -11,6 +11,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
 public class ProductoAdapter extends RecyclerView.Adapter<ProductoAdapter.ProductoViewHolder> {
@@ -49,8 +52,19 @@ public class ProductoAdapter extends RecyclerView.Adapter<ProductoAdapter.Produc
         Producto p = productos.get(position);
         holder.titulo.setText(p.title);
         holder.descripcion.setText(p.description);
-        holder.imagen.setImageResource(p.img);
+        //holder.imagen.setImageResource(p.img);
         holder.txtPrecio.setText("Precio:" + p.price);
+
+        // Manejo de img lo traemos de url usamos lib picasso mas liviano
+        if (p.imgUrl != null && !p.imgUrl.isEmpty()) {
+            Picasso.get()
+                    .load(p.imgUrl)
+                    .placeholder(R.drawable.imagen_no_disponible)
+                    .error(R.drawable.imagen_no_disponible)
+                    .into(holder.imagen);
+        } else {
+            holder.imagen.setImageResource(R.drawable.imagen_no_disponible);
+        }
 
         holder.btnAgregar.setOnClickListener(v -> {
             boolean yaExiste = false;

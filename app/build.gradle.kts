@@ -46,4 +46,6 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
     implementation("com.google.firebase:firebase-auth:22.3.0")
     implementation("com.google.android.gms:play-services-auth:20.7.0")
+    // Picasso para carga de imagenees desde URL
+    implementation("com.squareup.picasso:picasso:2.8")
 }

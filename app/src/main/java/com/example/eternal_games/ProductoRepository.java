@@ -110,35 +110,41 @@ public class ProductoRepository {
 
     public static void cargarDesdeFirebase(Context context, Consumer<List<Producto>> callback) {
         //Log.d("Firebase", "LLEGA: ");
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("productos").get().addOnSuccessListener(query -> {
+        //FirebaseFirestore db = FirebaseFirestore.getInstance();
+        //refactr usamos repositorio defiberebase qu egeneramos
+        FirebaseRepository repo = new FirebaseRepository();
+        repo.obtenerProductos(querySnapshot -> {
             List<Producto> lista = new ArrayList<>();
-            for (DocumentSnapshot doc : query.getDocuments()) {
+            for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
                 Producto producto = new Producto();
-                //producto.id = doc.getLong("id").intValue();
+
                 producto.id = doc.getId();
                 producto.title = doc.getString("title");
                 //Log.d("Firebase", "producto leido: " + doc.getString("title"));
                 producto.description = doc.getString("description");
                 producto.price = doc.getLong("price").intValue();
-                // No se utiliza mas -> producto.code = doc.getString("code");
                 producto.status = doc.getBoolean("status");
                 producto.platform = doc.getString("platform");
                 producto.topSell = doc.getBoolean("topSell");
                 producto.genre = doc.getString("genre");
                 producto.category = doc.getString("category");
 
-                //Falta definr todavia donde levantamso imagen
-                String imgName = doc.getString("img");
-                int resId = context.getResources().getIdentifier(imgName, "drawable", context.getPackageName());
-                producto.img = (resId != 0) ? resId : R.drawable.imagen_no_disponible;
+                Log.d("Firebase", "producto leido: " + doc.getString("title"));
+                // URL de la imagen
+                String imgUrl = doc.getString("img");
+                producto.imgUrl = (imgUrl != null && !imgUrl.isEmpty()) ? imgUrl : null;
+
+                // sto porsi no hay URL, usamos imagen por defecto ya cargada
+                producto.img = R.drawable.imagen_no_disponible;
 
                 lista.add(producto);
+
             }
             callback.accept(lista);
-        }).addOnFailureListener(e -> {
+        }, e -> {
             e.printStackTrace();
             callback.accept(new ArrayList<>());
         });
+
     }
 }

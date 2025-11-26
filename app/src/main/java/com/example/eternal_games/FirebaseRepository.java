@@ -9,6 +9,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
@@ -122,6 +123,15 @@ public class FirebaseRepository {
                 .collection("cart")
                 .document(productoId)
                 .delete()
+                .addOnSuccessListener(success)
+                .addOnFailureListener(failure);
+    }
+
+    ///trae todos lo productos lo centralizamos en fiberebse repositorio
+    public void obtenerProductos(OnSuccessListener<QuerySnapshot> success,
+                                 OnFailureListener failure) {
+        db.collection("productos")
+                .get()
                 .addOnSuccessListener(success)
                 .addOnFailureListener(failure);
     }

@@ -60,17 +60,6 @@ public class MainActivity extends AppCompatActivity {
         //Se cambio el metodo ahora cargar productos desde el Firebase con su carrito
         String userId = repo.obtenerUserId();
         cargarDatosIniciales(userId);
-        // Cargar productos desde Firebase
-        //ProductoRepository.cargarDesdeFirebase(this, productos -> {
-        //    this.productos.addAll(productos);
-        // Pasar repo y userId al adapter
-        //    adapter = new ProductoAdapter(
-        //            this, this.productos, badgeCantidad, carrito, repo, userId
-        //    );
-        //    recyclerProductos.setLayoutManager(new GridLayoutManager(this, 2));
-        //    recyclerProductos.setAdapter(adapter);
-        //});
-
 
         // Botón para agregar productos demo desde JSON --> quedo inactivo luego vemso que hacemos
         //btnDemo.setOnClickListener(v -> {
@@ -85,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "El carrito está vacío.", Toast.LENGTH_SHORT).show();
                 return;
             }
-
             //Intent intent = new Intent(this, CarritoActivity.class);
             //intent.putExtra("carrito", new ArrayList<>(carrito)); // Serializable
             //startActivity(intent);
