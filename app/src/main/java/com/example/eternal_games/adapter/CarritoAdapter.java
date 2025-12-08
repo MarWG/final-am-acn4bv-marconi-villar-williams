@@ -10,7 +10,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.eternal_games.CarritoCallback;
 import com.example.eternal_games.R;
 import com.example.eternal_games.model.CarritoItem;
 import com.squareup.picasso.Picasso;
@@ -21,12 +20,17 @@ public class CarritoAdapter extends RecyclerView.Adapter<CarritoAdapter.CarritoV
 
     private Context context;
     private List<CarritoItem> carrito;
-    //USAMOS INTERFACE CREADA
-    private CarritoCallback callback;
+    private OnItemClickListener listener;
 
-    public CarritoAdapter(Context context, List<CarritoItem> carrito) {
+    // Nueva interface simplificada
+    public interface OnItemClickListener {
+        void onEliminarClick(CarritoItem item);
+    }
+
+    public CarritoAdapter(Context context, List<CarritoItem> carrito, OnItemClickListener listener) {
         this.context = context;
         this.carrito = carrito;
+        this.listener = listener;
     }
 
     @NonNull
@@ -40,13 +44,11 @@ public class CarritoAdapter extends RecyclerView.Adapter<CarritoAdapter.CarritoV
     public void onBindViewHolder(@NonNull CarritoViewHolder holder, int position) {
         CarritoItem item = carrito.get(position);
 
-        //holder.imgProducto.setImageResource(item.producto.img);
         holder.txtTitulo.setText(item.producto.title);
         holder.txtPrecioUnitario.setText("Precio unitario: " + item.producto.price);
         holder.txtCantidad.setText("Cantidad: " + item.cantidad);
-        holder.txtTotal.setText("Total: " +item.getTotal());
+        holder.txtTotal.setText("Total: " + item.getTotal());
 
-        // Manejo de img lo traemos de url usamos lib picasso mas liviano
         if (item.producto.imgUrl != null && !item.producto.imgUrl.isEmpty()) {
             Picasso.get()
                     .load(item.producto.imgUrl)
@@ -57,19 +59,9 @@ public class CarritoAdapter extends RecyclerView.Adapter<CarritoAdapter.CarritoV
             holder.imgProducto.setImageResource(R.drawable.imagen_no_disponible);
         }
 
-        //evento boton eliminar carrito
         holder.btnEliminar.setOnClickListener(v -> {
-            int posicion = holder.getAdapterPosition();
-            if (posicion != RecyclerView.NO_POSITION) {
-                CarritoItem eliminado = carrito.get(posicion);
-                carrito.remove(posicion);
-                notifyItemRemoved(posicion);
-                notifyItemRangeChanged(posicion, carrito.size());
-                //Verificmos
-                if (callback != null) {
-                    callback.onCarritoActualizado(carrito);
-                    callback.onProductoEliminado(eliminado); // avisamos cual se borror
-                }
+            if (listener != null) {
+                listener.onEliminarClick(item);
             }
         });
     }
@@ -79,9 +71,14 @@ public class CarritoAdapter extends RecyclerView.Adapter<CarritoAdapter.CarritoV
         return carrito.size();
     }
 
+    // Método para actualizar lista desde el ViewModel
+    public void setItems(List<CarritoItem> nuevosItems) {
+        this.carrito = nuevosItems;
+        notifyDataSetChanged();
+    }
+
     public static class CarritoViewHolder extends RecyclerView.ViewHolder {
-        //AGREGAMOS btnEliminar A LA VISTA
-        ImageView imgProducto , btnEliminar;
+        ImageView imgProducto, btnEliminar;
         TextView txtTitulo, txtPrecioUnitario, txtCantidad, txtTotal;
 
         public CarritoViewHolder(@NonNull View itemView) {
@@ -91,13 +88,7 @@ public class CarritoAdapter extends RecyclerView.Adapter<CarritoAdapter.CarritoV
             txtPrecioUnitario = itemView.findViewById(R.id.txtPrecioUnitario);
             txtCantidad = itemView.findViewById(R.id.txtCantidad);
             txtTotal = itemView.findViewById(R.id.txtTotal);
-            btnEliminar = itemView.findViewById(R.id.btnEliminar); // nuevo BOTON
-
+            btnEliminar = itemView.findViewById(R.id.btnEliminar);
         }
-    }
-
-    //USAMOS INTERFACE CREADA
-    public void setCallback(CarritoCallback callback) {
-        this.callback = callback;
     }
 }
