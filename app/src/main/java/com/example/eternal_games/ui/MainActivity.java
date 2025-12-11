@@ -13,18 +13,14 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.eternal_games.repository.FirebaseRepository;
 import com.example.eternal_games.adapter.ProductoAdapter;
 import com.example.eternal_games.R;
 import com.example.eternal_games.model.CarritoItem;
-import com.example.eternal_games.model.Producto;
 import com.example.eternal_games.viewmodel.ProductoViewModel;
 import com.example.eternal_games.viewmodel.SesionViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,10 +31,8 @@ public class MainActivity extends AppCompatActivity {
     private Button btnDemo;
     private TextView badgeCantidad;
     private FloatingActionButton fabCarrito;
-    private List<Producto> productos = new ArrayList<>();
     private List<CarritoItem> carrito = new ArrayList<>();
     private ProductoAdapter adapter;
-    private FirebaseRepository repo;
     private SesionViewModel sesionViewModel;
     private ProductoViewModel viewModel;
 
@@ -54,14 +48,11 @@ public class MainActivity extends AppCompatActivity {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.setFirestoreSettings(settings);
 
-
-        //repo = new FirebaseRepository();
         setContentView(R.layout.activity_main);
         recyclerProductos = findViewById(R.id.recyclerProductos);
         btnDemo = findViewById(R.id.btnDemo);
         badgeCantidad = findViewById(R.id.badgeCantidad);
         fabCarrito = findViewById(R.id.fabCarrito);
-        btnDemo = findViewById(R.id.btnDemo);
 
         /// cerrar sesion (hay que mover esto para respetar arquitectura nueva)
         ImageButton btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
@@ -86,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
                 viewModel.getProductos().observe(this, productos -> adapter.setProductos(productos));
                 viewModel.getCarrito().observe(this, carritoItems -> {
                     adapter.setCarrito(carritoItems);
-                    actualizarBadge(calcularCantidadTotal(carritoItems));
+                    actualizarBadge(viewModel.calcularCantidadTotal(carritoItems));
                 });
                 viewModel.getMensajeToast().observe(this, mensaje ->
                         Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show()
@@ -105,6 +96,9 @@ public class MainActivity extends AppCompatActivity {
 
         //Disparamos la verificación de sesión
         sesionViewModel.verificarSesion();
+
+        // Botón para agregar productos demo hacia Firebase (refactorizado)
+        btnDemo.setOnClickListener(v -> viewModel.insertarProductosDemo());
 
         // Refactor para arquitectura (MVVM + Repository + Adapter) //
         // Botón flotante para abrir el carrito
@@ -145,16 +139,9 @@ public class MainActivity extends AppCompatActivity {
             if (carritoActualizado != null) {
                 carrito.clear();
                 carrito.addAll(carritoActualizado);
-                actualizarBadge(calcularCantidadTotal(carrito));
+                actualizarBadge(viewModel.calcularCantidadTotal(carrito));
             }
         }
-    }
-    private int calcularCantidadTotal(List<CarritoItem> carrito) {
-        int total = 0;
-        for (CarritoItem item : carrito) {
-            total += item.cantidad;
-        }
-        return total;
     }
 
     private void MenuCerrarSesion(ImageButton btnCerrarSesion) {
@@ -184,11 +171,6 @@ public class MainActivity extends AppCompatActivity {
 
         popup.show();
     }
-
-    /*private void cerrarSesion() {
-        repo.cerrarSesion();
-        navegarAlLogin();
-    }*/
 
     private void navegarAlLogin() {
         startActivity(new Intent(this, LoginActivity.class));

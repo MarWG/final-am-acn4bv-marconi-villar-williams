@@ -83,4 +83,24 @@ public class ProductoViewModel extends ViewModel {
 
     }
 
+    // Método para calcular la cantidad total de items en el carrito
+    public int calcularCantidadTotal(List<CarritoItem> carritoItems) {
+        int total = 0;
+        if (carritoItems != null) {
+            for (CarritoItem item : carritoItems) {
+                total += item.cantidad;
+            }
+        }
+        return total;
+    }
+
+    // Método para insertar productos demo en Firebase
+    public void insertarProductosDemo() {
+        ProductoRepository.obtenerProductosDemo();
+        mensajeToast.setValue("Productos demo insertados");
+        // Refrescar productos
+        cargarDatosIniciales();
+
+    }
+
 }

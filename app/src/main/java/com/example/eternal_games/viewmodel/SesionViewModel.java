@@ -95,5 +95,21 @@ public class SesionViewModel extends ViewModel {
         );
     }
 
+    // Login con email/contraseña
+    public void loginUsuario(String email, String password) {
+        if (email.isEmpty() || password.isEmpty()) {
+            errorMensaje.setValue("Completa todos los campos");
+            return;
+        }
+
+        repo.login(email, password,
+                user -> {
+                    usuarioLogueado.setValue(true);
+                    usuarioMail.setValue(user.getEmail());
+                },
+                error -> errorMensaje.setValue("Error: " + error.getMessage())
+        );
+    }
+
 
 }

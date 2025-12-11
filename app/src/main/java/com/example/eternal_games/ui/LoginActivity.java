@@ -10,10 +10,11 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
 
-import com.example.eternal_games.repository.FirebaseRepository;
 import com.example.eternal_games.GoogleSignInManager;
 import com.example.eternal_games.R;
+import com.example.eternal_games.viewmodel.SesionViewModel;
 import com.google.android.gms.auth.api.signin.*;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
@@ -21,7 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private FirebaseRepository repo;
+    private SesionViewModel sesionViewModel;
     private GoogleSignInClient googleSignInClient;
     private ActivityResultLauncher<Intent> signInLauncher;
 
@@ -33,7 +34,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        repo = new FirebaseRepository();
+        sesionViewModel = new ViewModelProvider(this).get(SesionViewModel.class);
 
         etUsuario = findViewById(R.id.etUsuario);
         etContrasena = findViewById(R.id.etContrasena);
@@ -48,7 +49,25 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         // Login con email/contraseña
-        btnLogin.setOnClickListener(v -> login());
+        btnLogin.setOnClickListener(v ->
+                sesionViewModel.loginUsuario(
+                        etUsuario.getText().toString().trim(),
+                        etContrasena.getText().toString().trim()
+                )
+        );
+
+        // Observamos resultados
+        sesionViewModel.getUsuarioLogueado().observe(this, logueado -> {
+            if (Boolean.TRUE.equals(logueado)) {
+                navegarAMain();
+            }
+        });
+
+        sesionViewModel.getErrorMensaje().observe(this, mensaje -> {
+            if (mensaje != null) {
+                mostrarError(mensaje);
+            }
+        });
 
         // Configuración Google Sign-In
         googleSignInClient = GoogleSignInManager.configurarGoogle(this);
@@ -61,11 +80,10 @@ public class LoginActivity extends AppCompatActivity {
                         try {
                             GoogleSignInAccount account = task.getResult(ApiException.class);
                             if (account != null) {
-                                GoogleSignInManager.autenticarConFirebase(
+                                sesionViewModel.loginConGoogle(
                                         account.getIdToken(),
                                         FirebaseAuth.getInstance(),
-                                        this,
-                                        this::navegarAMain
+                                        this
                                 );
                             }
                         } catch (ApiException e) {
@@ -81,28 +99,12 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void login() {
-        String email = etUsuario.getText().toString().trim();
-        String password = etContrasena.getText().toString().trim();
-
-        if (email.isEmpty() || password.isEmpty()) {
-            mostrarError("Completa todos los campos");
-            return;
-        }
-        repo.login(email, password,
-                user -> navegarAMain(),
-                error -> mostrarError("Error: " + error.getMessage())
-        );
-    }
-
-    // mostrar error en el la vista
     private void mostrarError(String mensaje) {
         headerError.setText(mensaje);
         headerError.setTextColor(ContextCompat.getColor(this, android.R.color.holo_red_dark));
         headerError.setVisibility(TextView.VISIBLE);
     }
 
-    // va al main activity
     private void navegarAMain() {
         headerError.setVisibility(TextView.GONE);
         startActivity(new Intent(this, MainActivity.class));
