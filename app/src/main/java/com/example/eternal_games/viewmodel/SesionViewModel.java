@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.eternal_games.GoogleSignInManager;
+import com.example.eternal_games.repository.CartRepository;
 import com.example.eternal_games.repository.FirebaseRepository;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -54,6 +55,7 @@ public class SesionViewModel extends ViewModel {
     // Cierra sesión
     public void cerrarSesion() {
         repo.cerrarSesion();
+        CartRepository.getInstance().reset();
         sesionCerrada.setValue(true);
     }
 

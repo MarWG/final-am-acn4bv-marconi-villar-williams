@@ -1,83 +1,83 @@
 package com.example.eternal_games.viewmodel;
+
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.eternal_games.model.CarritoItem;
-import com.example.eternal_games.repository.FirebaseRepository;
+import com.example.eternal_games.repository.CartRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CarritoViewModel extends ViewModel {
 
-    private final FirebaseRepository repo = new FirebaseRepository();
+    private final CartRepository cartRepo = CartRepository.getInstance();
 
-    private final MutableLiveData<List<CarritoItem>> carrito = new MutableLiveData<>(new ArrayList<>());
-    private final MutableLiveData<Integer> cantidadTotal = new MutableLiveData<>(0);
-    private final MutableLiveData<Double> totalGeneral = new MutableLiveData<>(0.0);
+    // Carrito compartido (mismo para todas las pantallas)
+    private final LiveData<List<CarritoItem>> carrito = cartRepo.getCarrito();
 
-    public LiveData<List<CarritoItem>> getCarrito() { return carrito; }
-    public LiveData<Integer> getCantidadTotal() { return cantidadTotal; }
-    public LiveData<Double> getTotalGeneral() { return totalGeneral; }
+    // Totales calculados en base al carrito (se actualizan solos)
+    private final MediatorLiveData<Integer> cantidadTotal = new MediatorLiveData<>();
+    private final MediatorLiveData<Double> totalGeneral = new MediatorLiveData<>();
 
-    // Inicializar carrito con datos recibidos
-    public void setCarrito(List<CarritoItem> items) {
-        carrito.setValue(items);
-        recalcular(items);
+    public CarritoViewModel() {
+        // cada vez que cambia el carrito, recalculamos
+        cantidadTotal.addSource(carrito, items -> cantidadTotal.setValue(calcularCantidad(items)));
+        totalGeneral.addSource(carrito, items -> totalGeneral.setValue(calcularTotal(items)));
+
+        // valores iniciales
+        cantidadTotal.setValue(0);
+        totalGeneral.setValue(0.0);
     }
 
-    // Eliminar un producto del carrito y de Firebase
+    public LiveData<List<CarritoItem>> getCarrito() {
+        return carrito;
+    }
+
+    public LiveData<Integer> getCantidadTotal() {
+        return cantidadTotal;
+    }
+
+    public LiveData<Double> getTotalGeneral() {
+        return totalGeneral;
+    }
+
+    // Eliminar del carrito (repo actualiza memoria + Firebase)
     public void eliminarProducto(CarritoItem item) {
-        String userId = repo.obtenerUserId();
-        repo.eliminarDelCarrito(userId, item.producto.id,
-                aVoid -> {
-                    List<CarritoItem> actual = new ArrayList<>(carrito.getValue());
-                    actual.remove(item);
-                    setCarrito(actual);
-                },
-                e -> {
-                    // Manejar error si querés exponer un LiveData de mensajes
-                }
-        );
+        if (item == null) return;
+        cartRepo.eliminar(item);
     }
 
-    // Finalizar compra: elimina todos los productos en Firebase y vacía el carrito
+    // Finalizar compra: borrar todos (Firebase) y vaciar memoria
     public void finalizarCompra() {
         List<CarritoItem> items = carrito.getValue();
         if (items == null || items.isEmpty()) return;
 
-        String userId = repo.obtenerUserId();
-        int total = 0;
-        int cantidad = 0;
-
-        for (CarritoItem item : items) {
-            total += item.getTotal();
-            cantidad += item.cantidad;
-
-            repo.eliminarDelCarrito(userId, item.producto.id,
-                    aVoid -> {}, e -> {});
+        for (CarritoItem item : new ArrayList<>(items)) {
+            cartRepo.eliminar(item);
         }
-
-        // Actualizamos LiveData con los resultados antes de vaciar
-        cantidadTotal.setValue(cantidad);
-        totalGeneral.setValue((double) total);
-
-        // Vaciar carrito y recalcular
-        carrito.setValue(new ArrayList<>());
-        recalcular(new ArrayList<>());
+        cartRepo.vaciar();
     }
 
-    // Recalcular totales
-    private void recalcular(List<CarritoItem> items) {
+    private int calcularCantidad(List<CarritoItem> items) {
         int cantidad = 0;
+        if (items != null) {
+            for (CarritoItem item : items) {
+                cantidad += item.cantidad;
+            }
+        }
+        return cantidad;
+    }
+
+    private double calcularTotal(List<CarritoItem> items) {
         double total = 0.0;
-        for (CarritoItem item : items) {
-            cantidad += item.cantidad;
-            total += item.getTotal();
+        if (items != null) {
+            for (CarritoItem item : items) {
+                total += item.getTotal();
+            }
         }
-        cantidadTotal.setValue(cantidad);
-        totalGeneral.setValue(total);
+        return total;
     }
-
 }
+

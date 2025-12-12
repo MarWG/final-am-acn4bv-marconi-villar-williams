@@ -3,9 +3,9 @@ package com.example.eternal_games.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -46,7 +46,7 @@ public class CarritoActivity extends AppCompatActivity {
         // ViewModel
         carritoViewModel = new ViewModelProvider(this).get(CarritoViewModel.class);
 
-        // Adapter con listener simplificado
+        // Adapter: al eliminar, el VM borra (repo actualiza memoria + Firebase)
         adapter = new CarritoAdapter(this, new ArrayList<>(), item -> {
             carritoViewModel.eliminarProducto(item);
             Toast.makeText(this, item.producto.title + " eliminado del carrito", Toast.LENGTH_SHORT).show();
@@ -58,20 +58,16 @@ public class CarritoActivity extends AppCompatActivity {
         // Observamos el carrito
         carritoViewModel.getCarrito().observe(this, items -> adapter.setItems(items));
 
-        // Observamos totales
+        // Observamos totales (calculados desde el carrito)
         carritoViewModel.getCantidadTotal().observe(this, cantidad ->
-                txtCantidadTotal.setText("Cantidad: " + cantidad));
+                txtCantidadTotal.setText("Cantidad: " + cantidad)
+        );
+
         carritoViewModel.getTotalGeneral().observe(this, total ->
-                txtTotalGeneral.setText("Total: $" + (double) total));
+                txtTotalGeneral.setText("Total: $" + total)
+        );
 
-        // Inicializamos con datos recibidos del intent
-        ArrayList<CarritoItem> carritoInicial =
-                (ArrayList<CarritoItem>) getIntent().getSerializableExtra("carrito");
-        if (carritoInicial != null) {
-            carritoViewModel.setCarrito(carritoInicial);
-        }
-
-        // Botón finalizar compra
+        // Finalizar compra
         btnFinalizarCompra.setOnClickListener(v -> {
             List<CarritoItem> items = carritoViewModel.getCarrito().getValue();
             if (items == null || items.isEmpty()) {
@@ -79,15 +75,18 @@ public class CarritoActivity extends AppCompatActivity {
                 return;
             }
 
-            // Capturamos los valores antes de vaciar
-            int total = carritoViewModel.getTotalGeneral().getValue().intValue();
-            int cantidad = carritoViewModel.getCantidadTotal().getValue();
+            // Tomamos valores ANTES de vaciar
+            Integer cantidad = carritoViewModel.getCantidadTotal().getValue();
+            Double total = carritoViewModel.getTotalGeneral().getValue();
 
-            carritoViewModel.finalizarCompra(); // ahora sí vaciamos
+            if (cantidad == null) cantidad = 0;
+            if (total == null) total = 0.0;
 
-            // Inflamos el layout personalizado
+            // Vaciar (repo borra en Firebase y memoria)
+            carritoViewModel.finalizarCompra();
+
+            // Dialog resumen
             View view = getLayoutInflater().inflate(R.layout.compra_finalizada, null);
-
             TextView txtResumen = view.findViewById(R.id.txtResumen);
             txtResumen.setText("Total: $" + total + "\nCantidad: " + cantidad);
 
@@ -98,27 +97,21 @@ public class CarritoActivity extends AppCompatActivity {
             Button btnCerrar = view.findViewById(R.id.btnCerrar);
             btnCerrar.setOnClickListener(cerrarView -> {
                 dialog.dismiss();
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                finish();
+                volverAMain();
             });
 
             dialog.show();
-
-            // Devolver carrito vacío y cantidad al MainActivity
-            Intent resultIntent = new Intent();
-            resultIntent.putExtra("carritoActualizado", new ArrayList<>(carritoViewModel.getCarrito().getValue()));
-            resultIntent.putExtra("cantidadTotal", cantidad);
-            setResult(RESULT_OK, resultIntent);
         });
 
-        // Botón volver a MainActivity
-        btnInicio.setOnClickListener(v -> {
-            Intent resultIntent = new Intent();
-            resultIntent.putExtra("carritoActualizado", new ArrayList<>(carritoViewModel.getCarrito().getValue()));
-            setResult(RESULT_OK, resultIntent);
-            finish();
-        });
+        // Volver siempre a Main
+        btnInicio.setOnClickListener(v -> volverAMain());
+    }
+
+    private void volverAMain() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+        finish();
     }
 }
+

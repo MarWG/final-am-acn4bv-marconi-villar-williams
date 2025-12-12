@@ -1,14 +1,12 @@
 package com.example.eternal_games.viewmodel;
 
-import android.widget.Toast;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.eternal_games.model.CarritoItem;
 import com.example.eternal_games.model.Producto;
-import com.example.eternal_games.repository.FirebaseRepository;
+import com.example.eternal_games.repository.CartRepository;
 import com.example.eternal_games.repository.ProductoRepository;
 
 import java.util.ArrayList;
@@ -16,74 +14,49 @@ import java.util.List;
 
 public class ProductoViewModel extends ViewModel {
 
-    private MutableLiveData<List<Producto>> productos = new MutableLiveData<>();
-    private MutableLiveData<List<CarritoItem>> carrito = new MutableLiveData<>();
-    private FirebaseRepository repo = new FirebaseRepository();
-    private MutableLiveData<String> mensajeToast = new MutableLiveData<>();
+    // Repo compartido (cache en memoria + sync Firebase)
+    private final CartRepository cartRepo = CartRepository.getInstance();
+
+    // Productos (solo catálogo)
+    private final MutableLiveData<List<Producto>> productos = new MutableLiveData<>();
+
+    // Mensajes para UI
+    private final MutableLiveData<String> mensajeToast = new MutableLiveData<>();
+
 
     public LiveData<List<Producto>> getProductos() {
         return productos;
     }
 
+    // 🔥 El carrito viene del repo compartido
     public LiveData<List<CarritoItem>> getCarrito() {
-        return carrito;
+        return cartRepo.getCarrito();
     }
+
     public LiveData<String> getMensajeToast() {
         return mensajeToast;
     }
 
-    public void cargarDatosIniciales() {
-        String userId = repo.obtenerUserId();
-        ProductoRepository.cargarDesdeFirebase(null, productosList -> {
-            productos.setValue(productosList);
 
-            repo.obtenerCarritoUsuario(userId, carritoItems -> {
-                List<CarritoItem> carritoConDetalles = new ArrayList<>();
-
-                for (CarritoItem item : carritoItems) {
-                    for (Producto p : productosList) {
-                        if (p.id.equals(item.producto.id)) {
-                            carritoConDetalles.add(new CarritoItem(p, item.cantidad));
-                            break;
-                        }
-                    }
-                }
-                carrito.setValue(carritoConDetalles);
-            }, e -> {
-                // Manejo de error
-            });
-        });
+    // Carga solo productos (no mezcla con carrito)
+    public void cargarProductos() {
+        ProductoRepository.cargarDesdeFirebase(null, productos::setValue);
     }
+
+    // Carga carrito SOLO una vez (si no estaba cargado)
+    public void cargarCarritoSiHaceFalta() {
+        cartRepo.cargarDesdeFirebaseSiHaceFalta();
+    }
+
 
     public void agregarAlCarrito(Producto producto) {
-        String uid =  repo.obtenerUserId();
+        if (producto == null) return;
 
-        List<CarritoItem> carritoActual = carrito.getValue();
-        if (carritoActual == null) carritoActual = new ArrayList<>();
-
-        boolean yaExiste = false;
-        for (CarritoItem item : carritoActual) {
-            if (item.producto.id.equals(producto.id)) {
-                item.cantidad++;
-                yaExiste = true;
-                repo.agregarAlCarrito(uid, producto.id, item.cantidad,
-                        aVoid -> {}, e -> {});
-                break;
-            }
-        }
-
-        if (!yaExiste) {
-            carritoActual.add(new CarritoItem(producto, 1));
-            repo.agregarAlCarrito(uid, producto.id, 1,
-                    aVoid -> {}, e -> {});
-        }
-        carrito.setValue(new ArrayList<>(carritoActual)); // refresca LiveData
-        // Emitir mensaje para la UI
+        cartRepo.agregar(producto); // actualiza memoria + escribe en Firebase
         mensajeToast.setValue(producto.title + " agregado al carrito");
-
     }
 
-    // Método para calcular la cantidad total de items en el carrito
+
     public int calcularCantidadTotal(List<CarritoItem> carritoItems) {
         int total = 0;
         if (carritoItems != null) {
@@ -94,13 +67,42 @@ public class ProductoViewModel extends ViewModel {
         return total;
     }
 
-    // Método para insertar productos demo en Firebase
+
     public void insertarProductosDemo() {
         ProductoRepository.obtenerProductosDemo();
         mensajeToast.setValue("Productos demo insertados");
-        // Refrescar productos
-        cargarDatosIniciales();
-
+        cargarProductos();
     }
+    public void inicializarDatos() {
+        ProductoRepository.cargarDesdeFirebase(null, productosList -> {
+            productos.setValue(productosList);
+
+            cartRepo.cargarRawDesdeFirebase(rawItems -> {
+
+                List<CarritoItem> conDetalles = new ArrayList<>();
+
+                if (rawItems != null) {
+                    for (CarritoItem item : rawItems) {
+                        Producto encontrado = null;
+
+                        for (Producto p : productosList) {
+                            if (p.id != null && p.id.equals(item.producto.id)) {
+                                encontrado = p;
+                                break;
+                            }
+                        }
+
+                        if (encontrado != null) {
+                            conDetalles.add(new CarritoItem(encontrado, item.cantidad));
+                        }
+                    }
+                }
+
+                //setea una sola vez el carrito “hidratado”
+                cartRepo.setCarrito(conDetalles);
+            });
+        });
+    }
+
 
 }
