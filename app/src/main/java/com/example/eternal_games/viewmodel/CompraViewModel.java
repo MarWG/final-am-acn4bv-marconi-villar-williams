@@ -1,5 +1,7 @@
 package com.example.eternal_games.viewmodel;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -26,6 +28,12 @@ public class CompraViewModel extends ViewModel {
     //Registrar una nueva compra
     public void registrarCompra(List<CarritoItem> items) {
         repo.registrarCompra(items);
+    }
+
+    //Nuevo: actualizar campo 'leido'
+    public void marcarComoLeido(String compraId, boolean leido) {
+        //Log.d("marcarComoLeido", compraId);
+        repo.marcarComoLeido(compraId, leido);
     }
 
 }

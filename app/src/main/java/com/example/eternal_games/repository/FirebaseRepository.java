@@ -238,4 +238,15 @@ public class FirebaseRepository {
                 })
                 .addOnFailureListener(failure);
     }
+    public void actualizarLeido(String compraId, boolean leido) {
+        String uid = obtenerUserId();
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(uid)
+                .collection("compras")
+                .document(compraId)
+                .update("leido", leido)
+                .addOnSuccessListener(aVoid -> Log.d("Repo", "Campo 'leido' actualizado"))
+                .addOnFailureListener(e -> Log.e("Repo", "Error al actualizar", e));
+    }
 }

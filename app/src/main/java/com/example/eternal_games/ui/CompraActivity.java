@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.eternal_games.R;
 import com.example.eternal_games.adapter.CompraAdapter;
+import com.example.eternal_games.model.Compra;
 import com.example.eternal_games.viewmodel.CompraViewModel;
 
 public class CompraActivity extends AppCompatActivity {
@@ -26,9 +27,11 @@ public class CompraActivity extends AppCompatActivity {
 
         adapter = new CompraAdapter();
         recyclerView.setAdapter(adapter);
-
         compraViewModel = new ViewModelProvider(this).get(CompraViewModel.class);
-
+        //marca como leido
+        adapter.setOnItemClick(compra -> {
+            compraViewModel.marcarComoLeido(compra.id, true);
+        });
         // Observar compras
         compraViewModel.getCompras().observe(this, compras -> {
             adapter.setCompras(compras);

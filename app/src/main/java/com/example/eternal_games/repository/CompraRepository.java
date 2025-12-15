@@ -110,4 +110,8 @@ public class CompraRepository {
 
         return compra;
     }
+    public void marcarComoLeido(String compraId, boolean leido) {
+        repo.actualizarLeido(compraId, leido);
+    }
+
 }
