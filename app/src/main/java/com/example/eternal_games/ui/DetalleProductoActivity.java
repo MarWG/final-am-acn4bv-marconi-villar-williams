@@ -2,6 +2,7 @@ package com.example.eternal_games.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -13,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.eternal_games.R;
 import com.example.eternal_games.model.Producto;
+import com.example.eternal_games.viewmodel.CompraViewModel;
 import com.example.eternal_games.viewmodel.ProductoViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.squareup.picasso.Picasso;
@@ -91,6 +93,13 @@ public class DetalleProductoActivity extends AppCompatActivity {
 
         // Volver siempre a Main
         btnInicio.setOnClickListener(v -> volverAMain());
+
+        CompraViewModel compraViewModel = new ViewModelProvider(this).get(CompraViewModel.class);
+
+        compraViewModel.getHayNotificacionesNoLeidas().observe(this, hayNoLeidas -> {
+            ImageView badge = findViewById(R.id.ic_notificacion);
+            badge.setVisibility(hayNoLeidas ? View.VISIBLE : View.GONE);
+        });
     }
 
     private void actualizarBadge(int cantidad) {
@@ -112,4 +121,3 @@ public class DetalleProductoActivity extends AppCompatActivity {
     }
 
 }
-

@@ -6,6 +6,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.eternal_games.R;
 import com.example.eternal_games.adapter.ProductoAdapter;
+import com.example.eternal_games.viewmodel.CompraViewModel;
 import com.example.eternal_games.viewmodel.ProductoViewModel;
 import com.example.eternal_games.viewmodel.SesionViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -32,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ProductoAdapter adapter;
     private SesionViewModel sesionViewModel;
+    private CompraViewModel compraViewModel;
     private ProductoViewModel viewModel;
 
     @Override
@@ -54,6 +57,12 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        compraViewModel = new ViewModelProvider(this).get(CompraViewModel.class);
+        compraViewModel.cargarCompras();
+        compraViewModel.getHayNotificacionesNoLeidas().observe(this, hayNoLeidas -> {
+            ImageView badge = findViewById(R.id.ic_notificacion);
+            badge.setVisibility(hayNoLeidas ? View.VISIBLE : View.GONE);
+        });
 
         sesionViewModel = new ViewModelProvider(this).get(SesionViewModel.class);
 
@@ -65,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
 
             // Inicializamos ViewModel
             viewModel = new ViewModelProvider(this).get(ProductoViewModel.class);
-
             adapter = new ProductoAdapter(
                     this,
                     new ArrayList<>(),
@@ -112,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
         fabCarrito.setOnClickListener(v -> {
             startActivity(new Intent(this, CarritoActivity.class));
         });
+
     }
 
     private void actualizarBadge(int cantidad) {

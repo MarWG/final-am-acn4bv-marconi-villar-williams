@@ -11,4 +11,13 @@ public class Compra {
     public int cantidadTotal;
     public double totalGeneral;
     public List<Producto> productos;
+
+    public boolean isLeido() {
+        return leido;
+    }
+
+    public void setLeido(boolean leido) {
+        this.leido = leido;
+    }
+
 }

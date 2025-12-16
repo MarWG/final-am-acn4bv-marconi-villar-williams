@@ -15,7 +15,7 @@ public class CarritoViewModel extends ViewModel {
 
     private final CartRepository cartRepo = CartRepository.getInstance();
 
-    private final CompraViewModel compraViewModel;
+    //private final CompraViewModel compraViewModel;
 
     // Carrito compartido (mismo para todas las pantallas)
     private final LiveData<List<CarritoItem>> carrito = cartRepo.getCarrito();
@@ -25,7 +25,7 @@ public class CarritoViewModel extends ViewModel {
     private final MediatorLiveData<Double> totalGeneral = new MediatorLiveData<>();
 
     public CarritoViewModel() {
-        this.compraViewModel = new CompraViewModel(); //traemos el viwmodel de compra
+        //this.compraViewModel = new CompraViewModel(); //traemos el viwmodel de compra
         // cada vez que cambia el carrito, recalculamos
         cantidadTotal.addSource(carrito, items -> cantidadTotal.setValue(calcularCantidad(items)));
         totalGeneral.addSource(carrito, items -> totalGeneral.setValue(calcularTotal(items)));
@@ -57,7 +57,7 @@ public class CarritoViewModel extends ViewModel {
     public void finalizarCompra() {
         List<CarritoItem> items = carrito.getValue();
         if (items == null || items.isEmpty()) return;
-        compraViewModel.registrarCompra(items);
+        //compraViewModel.registrarCompra(items);
         for (CarritoItem item : new ArrayList<>(items)) {
             cartRepo.eliminar(item);
         }

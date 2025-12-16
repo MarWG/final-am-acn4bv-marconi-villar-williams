@@ -42,7 +42,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-        <!-- Botón Inicio (solo ícono) -->
         <ImageButton
             android:id="@+id/btnInicio"
             android:layout_width="40dp"
@@ -50,22 +49,36 @@
             android:background="@android:color/transparent"
             android:src="@drawable/ic_home"
             android:contentDescription="Inicio"
-            app:layout_constraintEnd_toStartOf="@id/btnContacto"
+            app:layout_constraintEnd_toStartOf="@id/contenedorContacto"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-
-        <!-- Botón Contacto (solo ícono) -->
-        <ImageButton
-            android:id="@+id/btnContacto"
+        <FrameLayout
+            android:id="@+id/contenedorContacto"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_contacto"
-            android:contentDescription="Contacto"
             app:layout_constraintEnd_toStartOf="@id/btnCerrarSesion"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <ImageButton
+                android:id="@+id/btnContacto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_contacto"
+                android:contentDescription="Contacto" />
+
+            <ImageView
+                android:id="@+id/ic_notificacion"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:src="@drawable/ic_notificacion"
+                android:layout_gravity="end|top"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="2dp"
+                android:visibility="gone" />
+        </FrameLayout>
 
         <!-- Botón cerrar sesion -->
         <ImageButton

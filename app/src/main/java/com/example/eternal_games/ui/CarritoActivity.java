@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +19,7 @@ import com.example.eternal_games.R;
 import com.example.eternal_games.adapter.CarritoAdapter;
 import com.example.eternal_games.model.CarritoItem;
 import com.example.eternal_games.viewmodel.CarritoViewModel;
+import com.example.eternal_games.viewmodel.CompraViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +47,8 @@ public class CarritoActivity extends AppCompatActivity {
 
         // ViewModel
         carritoViewModel = new ViewModelProvider(this).get(CarritoViewModel.class);
+        CompraViewModel compraViewModel = new ViewModelProvider(this).get(CompraViewModel.class);
+
 
         // Adapter: al eliminar, el VM borra (repo actualiza memoria + Firebase)
         adapter = new CarritoAdapter(this, new ArrayList<>(), item -> {
@@ -83,8 +87,9 @@ public class CarritoActivity extends AppCompatActivity {
             if (total == null) total = 0.0;
 
             // Vaciar (repo borra en Firebase y memoria)
+            compraViewModel.registrarCompra(items);
             carritoViewModel.finalizarCompra();
-
+            compraViewModel.cargarCompras();
             // Dialog resumen
             View view = getLayoutInflater().inflate(R.layout.compra_finalizada, null);
             TextView txtResumen = view.findViewById(R.id.txtResumen);
@@ -105,6 +110,14 @@ public class CarritoActivity extends AppCompatActivity {
 
         // Volver siempre a Main
         btnInicio.setOnClickListener(v -> volverAMain());
+
+        //CompraViewModel compraViewModel = new ViewModelProvider(this).get(CompraViewModel.class);
+
+        compraViewModel.getHayNotificacionesNoLeidas().observe(this, hayNoLeidas -> {
+            ImageView badge = findViewById(R.id.ic_notificacion);
+            badge.setVisibility(hayNoLeidas ? View.VISIBLE : View.GONE);
+        });
+
     }
 
     private void volverAMain() {
@@ -114,4 +127,3 @@ public class CarritoActivity extends AppCompatActivity {
         finish();
     }
 }
-
